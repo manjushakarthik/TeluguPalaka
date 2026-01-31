@@ -26,9 +26,11 @@ const AA_ANIMATION = '/animations/aa.gif';
 interface PracticeViewProps {
   letter: AchuluLetter;
   onBack: () => void;
+  onNext?: () => void;
+  nextLetter?: AchuluLetter | null;
 }
 
-export function PracticeView({ letter, onBack }: PracticeViewProps) {
+export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeViewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [letterSize, setLetterSize] = useState(LETTER_SIZE_DEFAULT);
@@ -190,13 +192,18 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
   return (
     <section className="practice-view" aria-label={`Practice ${letter.symbol}`}>
       <header className="practice-header">
-        <button type="button" className="btn btn-back" onClick={onBack} aria-label="Back to letters">
+        <button type="button" className="btn btn-back" onClick={onBack} aria-label="Back to letter board">
           ← Back
         </button>
         <h2 className="practice-title">
           <span className="letter-large">{letter.symbol}</span>
           <span className="letter-name">"{letter.name}"</span>
         </h2>
+        {nextLetter && onNext ? (
+          <button type="button" className="btn btn-next" onClick={onNext} aria-label={`Next: ${nextLetter.symbol} (${nextLetter.name})`}>
+            Next: {nextLetter.symbol} →
+          </button>
+        ) : null}
       </header>
 
       <div className="customization">

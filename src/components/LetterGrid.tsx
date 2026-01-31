@@ -2,10 +2,11 @@ import type { AchuluLetter } from '../data/achulu';
 import { ACHULU } from '../data/achulu';
 
 interface LetterGridProps {
+  selectedLetter: AchuluLetter | null;
   onSelect: (letter: AchuluLetter) => void;
 }
 
-export function LetterGrid({ onSelect }: LetterGridProps) {
+export function LetterGrid({ selectedLetter, onSelect }: LetterGridProps) {
   return (
     <section className="letter-grid-section" aria-label="Select letter to practice">
       <div className="letter-grid-header">
@@ -19,10 +20,11 @@ export function LetterGrid({ onSelect }: LetterGridProps) {
           <button
             key={letter.id}
             type="button"
-            className="letter-tile"
+            className={`letter-tile ${selectedLetter?.id === letter.id ? 'letter-tile-selected' : ''}`}
             onClick={() => onSelect(letter)}
             role="listitem"
             aria-label={`Practice ${letter.symbol}, pronounced ${letter.name}`}
+            aria-current={selectedLetter?.id === letter.id ? 'true' : undefined}
           >
             <span className="letter-symbol">{letter.symbol}</span>
             <span className="letter-name">{letter.name}</span>
