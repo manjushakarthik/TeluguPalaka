@@ -194,11 +194,13 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
           ← Back
         </button>
         <h2 className="practice-title">
-          {letter.symbol} — {letter.name}
+          <span className="letter-large">{letter.symbol}</span>
+          <span className="letter-name">"{letter.name}"</span>
         </h2>
       </header>
 
       <div className="customization">
+        <p className="customization-title">Customize</p>
         <div className="custom-row">
           <label htmlFor="letter-size">Letter size</label>
           <input
@@ -263,7 +265,7 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
         )}
 
         <div className="practice-panel">
-          <p className="practice-label">Practice here</p>
+          <p className="practice-label">Trace here</p>
           <div
             className="practice-area"
             ref={containerRef}
@@ -299,6 +301,10 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
               aria-label="Trace the letter"
             />
           </div>
+          <p className="practice-hint">
+            <span className="practice-hint-icon">?</span>
+            Follow the dotted outline with your finger or mouse
+          </p>
           <div className="practice-buttons">
             <button type="button" className="btn btn-clear" onClick={clearCanvas}>
               Clear
@@ -313,46 +319,58 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
       </div>
 
       <div className="progress-section" aria-live="polite">
-        <p className="progress-title">This attempt</p>
-        <ul className="progress-list">
-          <li>
-            <span className="progress-label">Strokes drawn:</span>{' '}
-            <span className="progress-value">{strokes.length}</span>
+        <p className="progress-title">Your Progress</p>
+        <ul className="progress-stats">
+          <li className="progress-stat">
+            <span className="progress-stat-value">{strokes.length}</span>
+            <span className="progress-stat-label">Strokes drawn</span>
           </li>
-          <li>
-            <span className="progress-label">This letter has:</span>{' '}
-            <span className="progress-value">
+          <li className="progress-stat">
+            <span className="progress-stat-value">
               {(() => {
                 const n = getStrokeCountForLetter(letter.id);
-                return n !== null ? `${n} stroke${n !== 1 ? 's' : ''}` : '—';
+                return n !== null ? n : '—';
               })()}
             </span>
+            <span className="progress-stat-label">Expected strokes</span>
           </li>
-          <li>
-            <span className="progress-label">Stroke order accuracy:</span>{' '}
-            <span className="progress-value">
-              {(() => {
-                const ref = getStrokeReference(letter.id);
-                if (!ref?.strokes?.length) return null;
-                const acc = computeStrokeOrderAccuracy(strokes, ref.strokes);
-                return acc !== null ? `${acc}%` : '—';
-              })() ?? '—'}
-            </span>
-            {!getStrokeReference(letter.id)?.strokes?.length && (
-              <span className="progress-hint"> (needs reference path data)</span>
-            )}
+          <li className="progress-stat">
+            {(() => {
+              const ref = getStrokeReference(letter.id);
+              if (!ref?.strokes?.length) {
+                return (
+                  <>
+                    <span className="progress-stat-value">—</span>
+                    <span className="progress-stat-label">Accuracy</span>
+                    <span className="progress-stat-hint">Coming soon</span>
+                  </>
+                );
+              }
+              const acc = computeStrokeOrderAccuracy(strokes, ref.strokes);
+              const accClass = acc !== null
+                ? acc >= 80 ? 'accuracy-good' : acc >= 50 ? 'accuracy-medium' : 'accuracy-low'
+                : '';
+              return (
+                <>
+                  <span className={`progress-stat-value ${accClass}`}>
+                    {acc !== null ? `${acc}%` : '—'}
+                  </span>
+                  <span className="progress-stat-label">Accuracy</span>
+                </>
+              );
+            })()}
           </li>
         </ul>
       </div>
 
       <div className="download-section">
-        <p className="download-label">Download worksheet</p>
+        <p className="download-title">Export</p>
         <div className="download-buttons">
           <button type="button" className="btn btn-download" onClick={downloadPNG}>
-            Download as PNG
+            📥 Download PNG
           </button>
           <button type="button" className="btn btn-download" onClick={printWorksheet}>
-            Print worksheet
+            🖨️ Print worksheet
           </button>
         </div>
       </div>

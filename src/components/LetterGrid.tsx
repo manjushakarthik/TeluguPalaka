@@ -8,8 +8,12 @@ interface LetterGridProps {
 export function LetterGrid({ onSelect }: LetterGridProps) {
   return (
     <section className="letter-grid-section" aria-label="Select letter to practice">
-      <h2 className="letter-grid-title">Select letter to practice</h2>
-      <p className="letter-grid-subtitle">Telugu vowels (అచ్చులు)</p>
+      <div className="letter-grid-header">
+        <h2 className="letter-grid-title">Choose a letter to practice</h2>
+        <p className="letter-grid-subtitle">
+          Telugu vowels — <span className="telugu-text">అచ్చులు</span>
+        </p>
+      </div>
       <div className="letter-grid" role="list">
         {ACHULU.map((letter) => (
           <button
@@ -18,9 +22,10 @@ export function LetterGrid({ onSelect }: LetterGridProps) {
             className="letter-tile"
             onClick={() => onSelect(letter)}
             role="listitem"
-            aria-label={`Practice ${letter.symbol}, ${letter.name}`}
+            aria-label={`Practice ${letter.symbol}, pronounced ${letter.name}`}
           >
             <span className="letter-symbol">{letter.symbol}</span>
+            <span className="letter-name">{letter.name}</span>
           </button>
         ))}
       </div>
