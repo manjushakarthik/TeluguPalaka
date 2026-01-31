@@ -9,7 +9,10 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>TeluguPalaka</h1>
+        <h1>
+          <span className="title-telugu">తెలుగు పలక</span>
+          <span className="title-en">TeluguPalaka</span>
+        </h1>
         <p className="tagline">Learn Telugu script — trace vowels (అచ్చులు)</p>
       </header>
       <main className="app-main">
