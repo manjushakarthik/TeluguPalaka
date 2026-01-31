@@ -1,0 +1,423 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600&display=swap');
+
+:root {
+  font-family: system-ui, 'Noto Sans Telugu', -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --text: #1a1a1a;
+  --muted: #555;
+  --surface: #f5f5f5;
+  --surface-hover: #eee;
+  --border: #ccc;
+  --border-hover: #999;
+  --accent: #2563eb;
+  --accent-text: #fff;
+  --focus: #2563eb;
+  --dotted-color: #999;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #f5f5f5;
+    --muted: #aaa;
+    --surface: #2a2a2a;
+    --surface-hover: #333;
+    --border: #444;
+    --border-hover: #666;
+    --accent: #3b82f6;
+    --accent-text: #fff;
+    --focus: #60a5fa;
+    --dotted-color: #666;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--surface);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* App layout */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  font-size: 1.75rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.tagline {
+  margin: 0 0 1rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.app-main {
+  flex: 1;
+}
+
+/* Letter grid */
+.letter-grid-section {
+  margin: 0;
+}
+
+.letter-grid-title {
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.letter-grid-subtitle {
+  margin: 0 0 1rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.letter-tile {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-family: 'Noto Sans Telugu', serif;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.letter-tile:hover {
+  background: var(--surface-hover);
+  transform: scale(1.03);
+}
+
+.letter-tile:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.letter-symbol {
+  font-family: 'Noto Sans Telugu', serif;
+}
+
+/* Practice view */
+.practice-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.practice-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.practice-title {
+  font-size: 1.25rem;
+  margin: 0;
+  font-family: 'Noto Sans Telugu', serif;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn-back {
+  flex-shrink: 0;
+}
+
+.btn-clear,
+.btn-animate,
+.btn-download {
+  min-width: 5rem;
+}
+
+/* Customization */
+.customization {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+}
+
+.custom-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.custom-row label,
+.custom-label {
+  min-width: 6rem;
+  font-size: 0.9rem;
+}
+
+.custom-row input[type="range"] {
+  flex: 1;
+  min-width: 100px;
+  max-width: 200px;
+}
+
+.custom-value {
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-width: 2.5rem;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.color-swatch:hover {
+  border-color: var(--border-hover);
+}
+
+.color-swatch.active {
+  border-color: var(--text);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+/* Practice layout: optional GIF + practice area */
+.practice-layout {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.animate-panel {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.animate-label,
+.practice-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.animate-gif {
+  display: block;
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+}
+
+.animate-attribution {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.animate-attribution a {
+  color: var(--accent);
+}
+
+.practice-panel {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.practice-area {
+  position: relative;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dotted-letter-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dotted-letter-text {
+  font-size: 140px;
+  font-family: 'Noto Sans Telugu', serif;
+  fill: none;
+  stroke: var(--dotted-color);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 6;
+  paint-order: stroke fill;
+}
+
+/* One-shot "letter appears" animation when user clicks "Animate letter" (non-అ) */
+.dotted-letter-svg.dotted-letter-animate {
+  animation: letter-appear 1.2s ease-out;
+}
+
+.dotted-letter-svg.dotted-letter-animate .dotted-letter-text {
+  animation: letter-appear 1.2s ease-out;
+}
+
+@keyframes letter-appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.practice-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.practice-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Progress / this attempt */
+.progress-section {
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.progress-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.progress-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.progress-list li {
+  margin-bottom: 0.25rem;
+}
+
+.progress-label {
+  color: var(--muted);
+}
+
+.progress-value {
+  font-weight: 500;
+}
+
+.progress-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Download section */
+.download-section {
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.download-label {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.download-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

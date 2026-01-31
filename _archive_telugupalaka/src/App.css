@@ -1,0 +1,616 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  font-size: 1.75rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.tagline {
+  margin: 0 0 1rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.mode-tabs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.tab:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.app-main {
+  flex: 1;
+}
+
+/* Letter list */
+.letter-list h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.letter-list .instruction {
+  margin: 0 0 1rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.letter-tile {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-family: 'Noto Sans Telugu', serif;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.letter-tile:hover {
+  background: var(--surface-hover);
+  transform: scale(1.03);
+}
+
+.letter-tile:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.letter-tile.practiced {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+}
+
+.letter-check {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.75rem;
+  color: var(--correct);
+}
+
+.progress-summary {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.letter-symbol {
+  display: block;
+}
+
+.tracing-practice-count {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Tracing view */
+.tracing-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tracing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tracing-title {
+  font-size: 1.25rem;
+  font-family: 'Noto Sans Telugu', serif;
+}
+
+.nav-button {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  background: var(--surface-hover);
+}
+
+.play-sound-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.sound-error-inline {
+  font-size: 0.85rem;
+  color: var(--error);
+}
+
+.tracing-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Split layout for first vowel (అ): animation left, practice right */
+.tracing-split {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tracing-split-single {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto 0.5rem;
+}
+
+.tracing-demo {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.tracing-demo-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tracing-demo-gif {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.tracing-demo-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tracing-tool-btn {
+  min-width: 5rem;
+}
+
+.tracing-practice-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.tracing-practice-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tracing-practice-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tracing-demo-attribution {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-align: center;
+  max-width: 220px;
+}
+
+.tracing-demo-attribution a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.tracing-demo-attribution a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+  .tracing-split {
+    flex-direction: column;
+  }
+  .tracing-split .tracing-area {
+    max-width: 280px;
+  }
+}
+
+.tracing-area {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  flex: 0 0 auto;
+}
+
+/* In split layout, give practice area a clear background so it doesn’t blend with the white GIF */
+.tracing-split .tracing-area {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dotted-letter-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dotted-letter-text {
+  font-size: 140px;
+  font-family: 'Noto Sans Telugu', serif;
+  fill: none;
+  stroke: var(--dotted-color);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 6;
+  paint-order: stroke fill;
+}
+
+.letter-svg.solid-letter {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.solid-letter-text {
+  font-size: 140px;
+  font-family: 'Noto Sans Telugu', serif;
+  fill: var(--text);
+}
+
+.tracing-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.practice-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.mode-toggle-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.mode-toggle-btn:hover {
+  background: var(--surface-hover);
+}
+
+.mode-toggle-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.from-memory-controls {
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.from-memory-hint {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.tracing-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.test-yourself-panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.test-yourself-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+}
+
+.tracing-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Formation overlay */
+.formation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1rem;
+}
+
+.formation-hint {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.formation-container {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 1rem;
+}
+
+.letter-formation-animation {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formation-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.formation-letter-text {
+  font-size: 140px;
+  font-family: 'Noto Sans Telugu', serif;
+  fill: var(--text);
+  opacity: 0;
+  transform-origin: center;
+  animation: formation-draw 1500ms ease-out forwards;
+}
+
+@keyframes formation-draw {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Quiz */
+.quiz-view h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.quiz-view .instruction {
+  margin: 0 0 1rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.sound-button-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.sound-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.sound-button:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.sound-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.sound-error {
+  margin: 0.5rem 0 0 0;
+  color: var(--error);
+  font-size: 0.9rem;
+}
+
+.sound-fallback {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 320px;
+  margin: 0 auto 1rem;
+}
+
+.quiz-option {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-family: 'Noto Sans Telugu', serif;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  min-height: 64px;
+}
+
+.quiz-option:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.quiz-option:disabled {
+  cursor: default;
+}
+
+.quiz-option.option-correct {
+  background: var(--correct-bg);
+  border-color: var(--correct);
+}
+
+.quiz-option.option-wrong {
+  background: var(--wrong-bg);
+  border-color: var(--wrong);
+}
+
+.quiz-option:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.quiz-feedback {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.feedback {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+}
+
+.feedback.correct {
+  color: var(--correct);
+}
+
+.feedback.wrong {
+  color: var(--wrong);
+}
+
+.next-button {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+
+.next-button:hover {
+  filter: brightness(1.1);
+}
+
+.next-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.quiz-question-inline .quiz-options {
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}

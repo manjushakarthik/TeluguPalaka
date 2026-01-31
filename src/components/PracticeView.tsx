@@ -1,0 +1,356 @@
+import { useRef, useEffect, useCallback, useState } from 'react';
+import type { AchuluLetter } from '../data/achulu';
+import { getStrokeCountForLetter, getStrokeReference } from '../data/strokeReference';
+import { computeStrokeOrderAccuracy } from '../data/strokeOrderAccuracy';
+
+const LETTER_SIZE_MIN = 100;
+const LETTER_SIZE_MAX = 280;
+const LETTER_SIZE_DEFAULT = 180;
+
+const STROKE_WIDTH_MIN = 4;
+const STROKE_WIDTH_MAX = 24;
+const STROKE_WIDTH_DEFAULT = 10;
+
+const STROKE_COLORS = [
+  { name: 'Indigo', value: '#4f46e5' },
+  { name: 'Black', value: '#1a1a1a' },
+  { name: 'Red', value: '#dc2626' },
+  { name: 'Green', value: '#16a34a' },
+  { name: 'Amber', value: '#d97706' },
+];
+
+const A_ANIMATION_GIF = 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif';
+
+interface PracticeViewProps {
+  letter: AchuluLetter;
+  onBack: () => void;
+}
+
+export function PracticeView({ letter, onBack }: PracticeViewProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [letterSize, setLetterSize] = useState(LETTER_SIZE_DEFAULT);
+  const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH_DEFAULT);
+  const [strokeColor, setStrokeColor] = useState(STROKE_COLORS[0].value);
+  const [gifKey, setGifKey] = useState(0);
+  const [letterAnimKey, setLetterAnimKey] = useState(0);
+  const [strokes, setStrokes] = useState<Array<Array<{ x: number; y: number }>>>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const currentStrokeRef = useRef<Array<{ x: number; y: number }>>([]);
+  const showGif = letter.id === 'a';
+
+  useEffect(() => {
+    setStrokes([]);
+  }, [letter.id]);
+
+  const getPoint = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return null;
+    const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0]?.clientY : e.clientY;
+    if (clientX == null || clientY == null) return null;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }, []);
+
+  const startDraw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      const p = getPoint(e);
+      if (p) {
+        lastPos.current = p;
+        currentStrokeRef.current = [p];
+        setIsDrawing(true);
+      }
+    },
+    [getPoint]
+  );
+
+  const moveDraw = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      if (!isDrawing || !canvasRef.current) return;
+      const p = getPoint(e);
+      if (!p || !lastPos.current) return;
+      currentStrokeRef.current.push(p);
+      const ctx = canvasRef.current.getContext('2d');
+      if (!ctx) return;
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = strokeWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(lastPos.current.x, lastPos.current.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      lastPos.current = p;
+    },
+    [isDrawing, getPoint, strokeColor, strokeWidth]
+  );
+
+  const endDraw = useCallback(() => {
+    if (currentStrokeRef.current.length > 0) {
+      setStrokes((prev) => [...prev, [...currentStrokeRef.current]]);
+      currentStrokeRef.current = [];
+    }
+    setIsDrawing(false);
+    lastPos.current = null;
+  }, []);
+
+  const clearCanvas = useCallback(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const ctx = el.getContext('2d');
+    if (!ctx) return;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, el.width, el.height);
+    ctx.restore();
+    setStrokes([]);
+  }, []);
+
+  useEffect(() => {
+    const el = canvasRef.current;
+    const container = containerRef.current;
+    if (!el || !container) return;
+    const size = letterSize;
+    const dpr = window.devicePixelRatio || 1;
+    el.width = size * dpr;
+    el.height = size * dpr;
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    const ctx = el.getContext('2d');
+    if (ctx) ctx.scale(dpr, dpr);
+  }, [letter.id, letterSize]);
+
+  const downloadPNG = useCallback(() => {
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) return;
+    const size = letterSize;
+    const offscreen = document.createElement('canvas');
+    offscreen.width = size;
+    offscreen.height = size;
+    const ctx = offscreen.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, size, size);
+    const svg = container.querySelector('.dotted-letter-svg');
+    if (svg && svg instanceof SVGSVGElement) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, size, size);
+        ctx.drawImage(canvas, 0, 0, size, size);
+        const link = document.createElement('a');
+        link.download = `telugu-${letter.id}-practice.png`;
+        link.href = offscreen.toDataURL('image/png');
+        link.click();
+      };
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    } else {
+      ctx.drawImage(canvas, 0, 0, size, size);
+      const link = document.createElement('a');
+      link.download = `telugu-${letter.id}-practice.png`;
+      link.href = offscreen.toDataURL('image/png');
+      link.click();
+    }
+  }, [letter.id, letterSize]);
+
+  const printWorksheet = useCallback(() => {
+    const w = window.open('', '_blank');
+    if (!w) return;
+    const size = letterSize;
+    const container = containerRef.current;
+    const svg = container?.querySelector('.dotted-letter-svg');
+    const svgData = svg instanceof SVGSVGElement ? new XMLSerializer().serializeToString(svg) : '';
+    w.document.write(`
+      <!DOCTYPE html><html><head><title>Telugu Practice - ${letter.symbol}</title>
+      <style>body{font-family:system-ui;display:flex;flex-direction:column;align-items:center;padding:2rem;}
+      .letter{font-size:${Math.round(size * 0.7)}px;margin:1rem 0;}
+      img{max-width:100%;height:auto;border:1px solid #ccc;}</style></head><body>
+      <h1>Telugu Practice</h1>
+      <p class="letter">${letter.symbol} (${letter.name})</p>
+      <img src="${svgData ? 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData))) : ''}" width="${size}" height="${size}" alt="Letter" />
+      <p><small>Trace the letter above. Use "Download as PNG" in the app to save your tracing.</small></p>
+      </body></html>
+    `);
+    w.document.close();
+    w.print();
+    w.close();
+  }, [letter, letterSize]);
+
+  const triggerLetterAnimation = useCallback(() => {
+    setLetterAnimKey((k) => k + 1);
+  }, []);
+
+  return (
+    <section className="practice-view" aria-label={`Practice ${letter.symbol}`}>
+      <header className="practice-header">
+        <button type="button" className="btn btn-back" onClick={onBack} aria-label="Back to letters">
+          ← Back
+        </button>
+        <h2 className="practice-title">
+          {letter.symbol} — {letter.name}
+        </h2>
+      </header>
+
+      <div className="customization">
+        <div className="custom-row">
+          <label htmlFor="letter-size">Letter size</label>
+          <input
+            id="letter-size"
+            type="range"
+            min={LETTER_SIZE_MIN}
+            max={LETTER_SIZE_MAX}
+            value={letterSize}
+            onChange={(e) => setLetterSize(Number(e.target.value))}
+          />
+          <span className="custom-value">{letterSize}px</span>
+        </div>
+        <div className="custom-row">
+          <label htmlFor="stroke-width">Stroke width</label>
+          <input
+            id="stroke-width"
+            type="range"
+            min={STROKE_WIDTH_MIN}
+            max={STROKE_WIDTH_MAX}
+            value={strokeWidth}
+            onChange={(e) => setStrokeWidth(Number(e.target.value))}
+          />
+          <span className="custom-value">{strokeWidth}px</span>
+        </div>
+        <div className="custom-row">
+          <span className="custom-label">Stroke color</span>
+          <div className="color-swatches">
+            {STROKE_COLORS.map((c) => (
+              <button
+                key={c.value}
+                type="button"
+                className={`color-swatch ${strokeColor === c.value ? 'active' : ''}`}
+                style={{ backgroundColor: c.value }}
+                onClick={() => setStrokeColor(c.value)}
+                aria-label={c.name}
+                title={c.name}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="practice-layout">
+        {showGif && (
+          <div className="animate-panel">
+            <p className="animate-label">Watch stroke order</p>
+            <img
+              key={gifKey}
+              src={`${A_ANIMATION_GIF}?t=${gifKey}`}
+              alt={`Animation of writing ${letter.symbol}`}
+              className="animate-gif"
+            />
+            <button type="button" className="btn btn-animate" onClick={() => setGifKey((k) => k + 1)}>
+              Replay GIF
+            </button>
+            <p className="animate-attribution">
+              <a href="https://commons.wikimedia.org/wiki/File:Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif" target="_blank" rel="noopener noreferrer">Animation</a> by Subhashish Panigrahi, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+            </p>
+          </div>
+        )}
+
+        <div className="practice-panel">
+          <p className="practice-label">Practice here</p>
+          <div
+            className="practice-area"
+            ref={containerRef}
+            style={{ width: letterSize, height: letterSize }}
+          >
+            <svg
+              key={letterAnimKey}
+              className={`dotted-letter-svg ${!showGif && letterAnimKey > 0 ? 'dotted-letter-animate' : ''}`}
+              viewBox="0 0 200 200"
+              aria-hidden="true"
+              style={{ width: letterSize, height: letterSize }}
+            >
+              <text
+                x="50%"
+                y="50%"
+                dominantBaseline="central"
+                textAnchor="middle"
+                className="dotted-letter-text"
+              >
+                {letter.symbol}
+              </text>
+            </svg>
+            <canvas
+              ref={canvasRef}
+              className="practice-canvas"
+              onMouseDown={startDraw}
+              onMouseMove={moveDraw}
+              onMouseUp={endDraw}
+              onMouseLeave={endDraw}
+              onTouchStart={startDraw}
+              onTouchMove={moveDraw}
+              onTouchEnd={endDraw}
+              aria-label="Trace the letter"
+            />
+          </div>
+          <div className="practice-buttons">
+            <button type="button" className="btn btn-clear" onClick={clearCanvas}>
+              Clear
+            </button>
+            {!showGif && (
+              <button type="button" className="btn btn-animate" onClick={triggerLetterAnimation}>
+                Animate letter
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="progress-section" aria-live="polite">
+        <p className="progress-title">This attempt</p>
+        <ul className="progress-list">
+          <li>
+            <span className="progress-label">Strokes drawn:</span>{' '}
+            <span className="progress-value">{strokes.length}</span>
+          </li>
+          <li>
+            <span className="progress-label">This letter has:</span>{' '}
+            <span className="progress-value">
+              {(() => {
+                const n = getStrokeCountForLetter(letter.id);
+                return n !== null ? `${n} stroke${n !== 1 ? 's' : ''}` : '—';
+              })()}
+            </span>
+          </li>
+          <li>
+            <span className="progress-label">Stroke order accuracy:</span>{' '}
+            <span className="progress-value">
+              {(() => {
+                const ref = getStrokeReference(letter.id);
+                if (!ref?.strokes?.length) return null;
+                const acc = computeStrokeOrderAccuracy(strokes, ref.strokes);
+                return acc !== null ? `${acc}%` : '—';
+              })() ?? '—'}
+            </span>
+            {!getStrokeReference(letter.id)?.strokes?.length && (
+              <span className="progress-hint"> (needs reference path data)</span>
+            )}
+          </li>
+        </ul>
+      </div>
+
+      <div className="download-section">
+        <p className="download-label">Download worksheet</p>
+        <div className="download-buttons">
+          <button type="button" className="btn btn-download" onClick={downloadPNG}>
+            Download as PNG
+          </button>
+          <button type="button" className="btn btn-download" onClick={printWorksheet}>
+            Print worksheet
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}

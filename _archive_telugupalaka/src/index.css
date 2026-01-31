@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600&display=swap');
+
+:root {
+  font-family: system-ui, 'Noto Sans Telugu', -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --text: #1a1a1a;
+  --muted: #555;
+  --surface: #f5f5f5;
+  --surface-hover: #eee;
+  --border: #ccc;
+  --border-hover: #999;
+  --accent: #2563eb;
+  --accent-text: #fff;
+  --focus: #2563eb;
+  --dotted-color: #999;
+  --correct: #15803d;
+  --correct-bg: #dcfce7;
+  --wrong: #b91c1c;
+  --wrong-bg: #fee2e2;
+  --error: #b91c1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #f5f5f5;
+    --muted: #aaa;
+    --surface: #2a2a2a;
+    --surface-hover: #333;
+    --border: #444;
+    --border-hover: #666;
+    --accent: #3b82f6;
+    --accent-text: #fff;
+    --focus: #60a5fa;
+    --dotted-color: #666;
+    --correct: #22c55e;
+    --correct-bg: #14532d;
+    --wrong: #ef4444;
+    --wrong-bg: #450a0a;
+    --error: #f87171;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--surface);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+}
