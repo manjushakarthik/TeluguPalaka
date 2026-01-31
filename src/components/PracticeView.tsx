@@ -20,6 +20,8 @@ const STROKE_COLORS = [
 ];
 
 const A_ANIMATION_GIF = 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif';
+/** Second vowel (ఆ) – local animation (public/animations/aa.gif) */
+const AA_ANIMATION = '/animations/aa.gif';
 
 interface PracticeViewProps {
   letter: AchuluLetter;
@@ -38,7 +40,8 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const currentStrokeRef = useRef<Array<{ x: number; y: number }>>([]);
-  const showGif = letter.id === 'a';
+  const showAnimationPanel = letter.id === 'a' || letter.id === 'aa';
+  const animationSrc = letter.id === 'a' ? A_ANIMATION_GIF : letter.id === 'aa' ? AA_ANIMATION : '';
 
   useEffect(() => {
     setStrokes([]);
@@ -239,21 +242,23 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
       </div>
 
       <div className="practice-layout">
-        {showGif && (
+        {showAnimationPanel && animationSrc && (
           <div className="animate-panel">
             <p className="animate-label">Watch stroke order</p>
             <img
               key={gifKey}
-              src={`${A_ANIMATION_GIF}?t=${gifKey}`}
+              src={`${animationSrc}${animationSrc.includes('?') ? '&' : '?'}t=${gifKey}`}
               alt={`Animation of writing ${letter.symbol}`}
               className="animate-gif"
             />
             <button type="button" className="btn btn-animate" onClick={() => setGifKey((k) => k + 1)}>
-              Replay GIF
+              Replay
             </button>
-            <p className="animate-attribution">
-              <a href="https://commons.wikimedia.org/wiki/File:Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif" target="_blank" rel="noopener noreferrer">Animation</a> by Subhashish Panigrahi, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
-            </p>
+            {letter.id === 'a' && (
+              <p className="animate-attribution">
+                <a href="https://commons.wikimedia.org/wiki/File:Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif" target="_blank" rel="noopener noreferrer">Animation</a> by Subhashish Panigrahi, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+              </p>
+            )}
           </div>
         )}
 
@@ -266,7 +271,7 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
           >
             <svg
               key={letterAnimKey}
-              className={`dotted-letter-svg ${!showGif && letterAnimKey > 0 ? 'dotted-letter-animate' : ''}`}
+              className={`dotted-letter-svg ${!showAnimationPanel && letterAnimKey > 0 ? 'dotted-letter-animate' : ''}`}
               viewBox="0 0 200 200"
               aria-hidden="true"
               style={{ width: letterSize, height: letterSize }}
@@ -298,7 +303,7 @@ export function PracticeView({ letter, onBack }: PracticeViewProps) {
             <button type="button" className="btn btn-clear" onClick={clearCanvas}>
               Clear
             </button>
-            {!showGif && (
+            {!showAnimationPanel && (
               <button type="button" className="btn btn-animate" onClick={triggerLetterAnimation}>
                 Animate letter
               </button>

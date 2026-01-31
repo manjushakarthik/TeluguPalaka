@@ -41,6 +41,36 @@ const REFERENCE: Record<string, LetterStrokeReference> = {
       ],
     ],
   },
+  // ఆ – second vowel; stroke-order animation in public/animations/aa.gif
+  aa: {
+    letterId: 'aa',
+    strokeCount: 1,
+    strokes: [
+      [
+        // loop start
+        [0.5, 0.2],
+        [0.65, 0.25],
+        [0.78, 0.4],
+        [0.8, 0.55],
+        [0.72, 0.72],
+        [0.55, 0.8],
+        [0.38, 0.75],
+        [0.25, 0.6],
+        [0.22, 0.45],
+        [0.3, 0.3],
+        [0.42, 0.22],
+  
+        // transition into aa tail (no pen lift)
+        [0.55, 0.25],
+        [0.68, 0.32],
+        [0.78, 0.42],
+        [0.85, 0.55],
+        [0.88, 0.7],
+        [0.85, 0.9],
+      ],
+    ],
+  },
+  
 };
 
 /**
