@@ -415,6 +415,24 @@ button {
 }
 
 /* Customization */
+.customization-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.btn-customize {
+  background: var(--surface-alt);
+  border: 2px solid var(--border);
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+}
+
+.btn-customize:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
 .customization {
   display: flex;
   flex-direction: column;
@@ -423,6 +441,7 @@ button {
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  margin-bottom: 1rem;
 }
 
 .customization-title {

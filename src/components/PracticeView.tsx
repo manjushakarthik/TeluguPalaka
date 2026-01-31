@@ -33,12 +33,14 @@ interface PracticeViewProps {
 export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeViewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const [letterSize, setLetterSize] = useState(LETTER_SIZE_DEFAULT);
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH_DEFAULT);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLORS[0].value);
   const [gifKey, setGifKey] = useState(0);
   const [letterAnimKey, setLetterAnimKey] = useState(0);
   const [strokes, setStrokes] = useState<Array<Array<{ x: number; y: number }>>>([]);
+  const [showCustomization, setShowCustomization] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const currentStrokeRef = useRef<Array<{ x: number; y: number }>>([]);
@@ -47,6 +49,10 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
 
   useEffect(() => {
     setStrokes([]);
+  }, [letter.id]);
+
+  useEffect(() => {
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [letter.id]);
 
   const getPoint = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -190,7 +196,7 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
   }, []);
 
   return (
-    <section className="practice-view" aria-label={`Practice ${letter.symbol}`}>
+    <section ref={sectionRef} className="practice-view" aria-label={`Practice ${letter.symbol}`}>
       <header className="practice-header">
         <button type="button" className="btn btn-back" onClick={onBack} aria-label="Back to letter board">
           ← Back
@@ -206,8 +212,20 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
         ) : null}
       </header>
 
-      <div className="customization">
-        <p className="customization-title">Customize</p>
+      <div className="customization-toggle">
+        <button
+          type="button"
+          className="btn btn-customize"
+          onClick={() => setShowCustomization((v) => !v)}
+          aria-expanded={showCustomization}
+        >
+          {showCustomization ? '✨ Hide options' : '✨ Customize'}
+        </button>
+      </div>
+
+      {showCustomization && (
+        <div className="customization">
+          <p className="customization-title">Customize</p>
         <div className="custom-row">
           <label htmlFor="letter-size">Letter size</label>
           <input
@@ -248,7 +266,8 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
             ))}
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       <div className="practice-layout">
         {showAnimationPanel && animationSrc && (
