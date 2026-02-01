@@ -2,16 +2,19 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import type { AchuluLetter } from '../data/achulu';
 import { getStrokeCountForLetter, getStrokeReference } from '../data/strokeReference';
 import { computeStrokeOrderAccuracy } from '../data/strokeOrderAccuracy';
+import { StrokeOrderAnimation } from './StrokeOrderAnimation';
+import { ProgressiveStrokePractice } from './ProgressiveStrokePractice';
 
 const LETTER_SIZE_MIN = 100;
 const LETTER_SIZE_MAX = 280;
 const LETTER_SIZE_DEFAULT = 180;
 
-const STROKE_WIDTH_MIN = 4;
-const STROKE_WIDTH_MAX = 24;
-const STROKE_WIDTH_DEFAULT = 10;
+const STROKE_WIDTH_MIN = 6;
+const STROKE_WIDTH_MAX = 32;
+const STROKE_WIDTH_DEFAULT = 16;
 
 const STROKE_COLORS = [
+  { name: 'White', value: '#ffffff' },
   { name: 'Indigo', value: '#4f46e5' },
   { name: 'Black', value: '#1a1a1a' },
   { name: 'Red', value: '#dc2626' },
@@ -20,8 +23,16 @@ const STROKE_COLORS = [
 ];
 
 const A_ANIMATION_GIF = 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif';
-/** Second vowel (ఆ) – local animation (public/animations/aa.gif) */
 const AA_ANIMATION = '/animations/aa.gif';
+/** Character with stroke metadata: gif + JSON for stroke-order replay (e.g. public/animations/character.gif, character_metadata.json) */
+const CHARACTER_ANIMATION = { gif: '/animations/character.gif', metadata: '/animations/character_metadata.json' };
+
+/** Letter id -> animation config. Use metadata when present for stroke-order replay. */
+const ANIMATION_CONFIG: Record<string, { gif: string; metadata?: string }> = {
+  a: { gif: A_ANIMATION_GIF },
+  aa: { gif: AA_ANIMATION },
+  ii: CHARACTER_ANIMATION,
+};
 
 interface PracticeViewProps {
   letter: AchuluLetter;
@@ -36,7 +47,7 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
   const sectionRef = useRef<HTMLElement>(null);
   const [letterSize, setLetterSize] = useState(LETTER_SIZE_DEFAULT);
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH_DEFAULT);
-  const [strokeColor, setStrokeColor] = useState(STROKE_COLORS[0].value);
+  const [strokeColor, setStrokeColor] = useState('#ffffff');
   const [gifKey, setGifKey] = useState(0);
   const [letterAnimKey, setLetterAnimKey] = useState(0);
   const [strokes, setStrokes] = useState<Array<Array<{ x: number; y: number }>>>([]);
@@ -44,8 +55,9 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const currentStrokeRef = useRef<Array<{ x: number; y: number }>>([]);
-  const showAnimationPanel = letter.id === 'a' || letter.id === 'aa';
-  const animationSrc = letter.id === 'a' ? A_ANIMATION_GIF : letter.id === 'aa' ? AA_ANIMATION : '';
+  const animationConfig = ANIMATION_CONFIG[letter.id];
+  const showAnimationPanel = !!animationConfig;
+  const hasStrokeMetadata = !!animationConfig?.metadata;
 
   useEffect(() => {
     setStrokes([]);
@@ -270,77 +282,98 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
       )}
 
       <div className="practice-layout">
-        {showAnimationPanel && animationSrc && (
+        {showAnimationPanel && animationConfig && (
           <div className="animate-panel">
             <p className="animate-label">Watch stroke order</p>
-            <img
-              key={gifKey}
-              src={`${animationSrc}${animationSrc.includes('?') ? '&' : '?'}t=${gifKey}`}
-              alt={`Animation of writing ${letter.symbol}`}
-              className="animate-gif"
-            />
-            <button type="button" className="btn btn-animate" onClick={() => setGifKey((k) => k + 1)}>
-              Replay
-            </button>
-            {letter.id === 'a' && (
-              <p className="animate-attribution">
-                <a href="https://commons.wikimedia.org/wiki/File:Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif" target="_blank" rel="noopener noreferrer">Animation</a> by Subhashish Panigrahi, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
-              </p>
+            {hasStrokeMetadata ? (
+              <StrokeOrderAnimation
+                metadataUrl={animationConfig.metadata ?? null}
+                replayKey={gifKey}
+                onReplay={() => setGifKey((k) => k + 1)}
+              />
+            ) : (
+              <>
+                <img
+                  key={gifKey}
+                  src={`${animationConfig.gif}${animationConfig.gif.includes('?') ? '&' : '?'}t=${gifKey}`}
+                  alt={`Animation of writing ${letter.symbol}`}
+                  className="animate-gif"
+                />
+                <button type="button" className="btn btn-animate" onClick={() => setGifKey((k) => k + 1)}>
+                  Replay
+                </button>
+                {letter.id === 'a' && (
+                  <p className="animate-attribution">
+                    <a href="https://commons.wikimedia.org/wiki/File:Animation_of_hand-writing_Kannada_and_Telugu_character_%22%E0%B0%85%22.gif" target="_blank" rel="noopener noreferrer">Animation</a> by Subhashish Panigrahi, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+                  </p>
+                )}
+              </>
             )}
           </div>
         )}
 
         <div className="practice-panel">
           <p className="practice-label">Trace here</p>
-          <div
-            className="practice-area"
-            ref={containerRef}
-            style={{ width: letterSize, height: letterSize }}
-          >
-            <svg
-              key={letterAnimKey}
-              className={`dotted-letter-svg ${!showAnimationPanel && letterAnimKey > 0 ? 'dotted-letter-animate' : ''}`}
-              viewBox="0 0 200 200"
-              aria-hidden="true"
-              style={{ width: letterSize, height: letterSize }}
-            >
-              <text
-                x="50%"
-                y="50%"
-                dominantBaseline="central"
-                textAnchor="middle"
-                className="dotted-letter-text"
-              >
-                {letter.symbol}
-              </text>
-            </svg>
-            <canvas
-              ref={canvasRef}
-              className="practice-canvas"
-              onMouseDown={startDraw}
-              onMouseMove={moveDraw}
-              onMouseUp={endDraw}
-              onMouseLeave={endDraw}
-              onTouchStart={startDraw}
-              onTouchMove={moveDraw}
-              onTouchEnd={endDraw}
-              aria-label="Trace the letter"
+          {hasStrokeMetadata && animationConfig?.metadata ? (
+            <ProgressiveStrokePractice
+              metadataUrl={animationConfig.metadata}
+              letterSize={letterSize}
+              strokeWidth={strokeWidth}
+              strokeColor={strokeColor}
             />
-          </div>
-          <p className="practice-hint">
-            <span className="practice-hint-icon">?</span>
-            Follow the dotted outline with your finger or mouse
-          </p>
-          <div className="practice-buttons">
-            <button type="button" className="btn btn-clear" onClick={clearCanvas}>
-              Clear
-            </button>
-            {!showAnimationPanel && (
-              <button type="button" className="btn btn-animate" onClick={triggerLetterAnimation}>
-                Animate letter
-              </button>
-            )}
-          </div>
+          ) : (
+            <>
+              <div
+                className="practice-area"
+                ref={containerRef}
+                style={{ width: letterSize, height: letterSize }}
+              >
+                <svg
+                  key={letterAnimKey}
+                  className={`dotted-letter-svg ${!showAnimationPanel && letterAnimKey > 0 ? 'dotted-letter-animate' : ''}`}
+                  viewBox="0 0 200 200"
+                  aria-hidden="true"
+                  style={{ width: letterSize, height: letterSize }}
+                >
+                  <text
+                    x="50%"
+                    y="50%"
+                    dominantBaseline="central"
+                    textAnchor="middle"
+                    className="dotted-letter-text"
+                  >
+                    {letter.symbol}
+                  </text>
+                </svg>
+                <canvas
+                  ref={canvasRef}
+                  className="practice-canvas"
+                  onMouseDown={startDraw}
+                  onMouseMove={moveDraw}
+                  onMouseUp={endDraw}
+                  onMouseLeave={endDraw}
+                  onTouchStart={startDraw}
+                  onTouchMove={moveDraw}
+                  onTouchEnd={endDraw}
+                  aria-label="Trace the letter"
+                />
+              </div>
+              <p className="practice-hint">
+                <span className="practice-hint-icon">?</span>
+                Follow the dotted outline with your finger or mouse
+              </p>
+              <div className="practice-buttons">
+                <button type="button" className="btn btn-clear" onClick={clearCanvas}>
+                  Clear
+                </button>
+                {!showAnimationPanel && (
+                  <button type="button" className="btn btn-animate" onClick={triggerLetterAnimation}>
+                    Animate letter
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

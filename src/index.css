@@ -612,6 +612,128 @@ button {
   text-decoration: underline;
 }
 
+/* Stroke-order animation (metadata-driven replay + GIF) */
+.stroke-order-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stroke-order-canvas-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stroke-order-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.stroke-order-canvas {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.stroke-order-loading {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.stroke-order-gif-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stroke-order-gif {
+  max-width: 180px;
+}
+
+.stroke-order-gif-caption {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* Progressive stroke-by-stroke practice */
+.progressive-stroke-practice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.progressive-header {
+  text-align: center;
+}
+
+.progressive-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.progressive-complete {
+  color: var(--success);
+  font-size: 1.1rem;
+}
+
+.progressive-area {
+  position: relative;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: #1a1a1a;
+  box-shadow: var(--shadow);
+}
+
+.progressive-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.progressive-canvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.progressive-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.progressive-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  text-align: center;
+  max-width: 320px;
+}
+
+.progressive-loading,
+.progressive-error {
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-align: center;
+}
+
 .practice-panel {
   flex: 1;
   min-width: 220px;
