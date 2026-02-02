@@ -51,6 +51,7 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
   const [gifKey, setGifKey] = useState(0);
   const [letterAnimKey, setLetterAnimKey] = useState(0);
   const [strokes, setStrokes] = useState<Array<Array<{ x: number; y: number }>>>([]);
+  const [progressiveProgress, setProgressiveProgress] = useState<{ completed: number; total: number } | null>(null);
   const [showCustomization, setShowCustomization] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
@@ -61,6 +62,7 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
 
   useEffect(() => {
     setStrokes([]);
+    setProgressiveProgress(null);
   }, [letter.id]);
 
   useEffect(() => {
@@ -320,6 +322,7 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
               letterSize={letterSize}
               strokeWidth={strokeWidth}
               strokeColor={strokeColor}
+              onProgress={(completed, total) => setProgressiveProgress({ completed, total })}
             />
           ) : (
             <>
@@ -380,45 +383,68 @@ export function PracticeView({ letter, onBack, onNext, nextLetter }: PracticeVie
       <div className="progress-section" aria-live="polite">
         <p className="progress-title">Your Progress</p>
         <ul className="progress-stats">
-          <li className="progress-stat">
-            <span className="progress-stat-value">{strokes.length}</span>
-            <span className="progress-stat-label">Strokes drawn</span>
-          </li>
-          <li className="progress-stat">
-            <span className="progress-stat-value">
-              {(() => {
-                const n = getStrokeCountForLetter(letter.id);
-                return n !== null ? n : '—';
-              })()}
-            </span>
-            <span className="progress-stat-label">Expected strokes</span>
-          </li>
-          <li className="progress-stat">
-            {(() => {
-              const ref = getStrokeReference(letter.id);
-              if (!ref?.strokes?.length) {
-                return (
-                  <>
-                    <span className="progress-stat-value">—</span>
-                    <span className="progress-stat-label">Accuracy</span>
-                    <span className="progress-stat-hint">Coming soon</span>
-                  </>
-                );
-              }
-              const acc = computeStrokeOrderAccuracy(strokes, ref.strokes);
-              const accClass = acc !== null
-                ? acc >= 80 ? 'accuracy-good' : acc >= 50 ? 'accuracy-medium' : 'accuracy-low'
-                : '';
-              return (
-                <>
-                  <span className={`progress-stat-value ${accClass}`}>
-                    {acc !== null ? `${acc}%` : '—'}
-                  </span>
-                  <span className="progress-stat-label">Accuracy</span>
-                </>
-              );
-            })()}
-          </li>
+          {hasStrokeMetadata && progressiveProgress ? (
+            <>
+              <li className="progress-stat">
+                <span className="progress-stat-value">{progressiveProgress.completed}</span>
+                <span className="progress-stat-label">Strokes completed</span>
+              </li>
+              <li className="progress-stat">
+                <span className="progress-stat-value">{progressiveProgress.total}</span>
+                <span className="progress-stat-label">Total strokes</span>
+              </li>
+              <li className="progress-stat">
+                <span className={`progress-stat-value ${progressiveProgress.completed === progressiveProgress.total ? 'accuracy-good' : ''}`}>
+                  {progressiveProgress.total > 0
+                    ? `${Math.round((progressiveProgress.completed / progressiveProgress.total) * 100)}%`
+                    : '0%'}
+                </span>
+                <span className="progress-stat-label">Complete</span>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="progress-stat">
+                <span className="progress-stat-value">{strokes.length}</span>
+                <span className="progress-stat-label">Strokes drawn</span>
+              </li>
+              <li className="progress-stat">
+                <span className="progress-stat-value">
+                  {(() => {
+                    const n = getStrokeCountForLetter(letter.id);
+                    return n !== null ? n : '—';
+                  })()}
+                </span>
+                <span className="progress-stat-label">Expected strokes</span>
+              </li>
+              <li className="progress-stat">
+                {(() => {
+                  const ref = getStrokeReference(letter.id);
+                  if (!ref?.strokes?.length) {
+                    return (
+                      <>
+                        <span className="progress-stat-value">—</span>
+                        <span className="progress-stat-label">Accuracy</span>
+                        <span className="progress-stat-hint">Coming soon</span>
+                      </>
+                    );
+                  }
+                  const acc = computeStrokeOrderAccuracy(strokes, ref.strokes);
+                  const accClass = acc !== null
+                    ? acc >= 80 ? 'accuracy-good' : acc >= 50 ? 'accuracy-medium' : 'accuracy-low'
+                    : '';
+                  return (
+                    <>
+                      <span className={`progress-stat-value ${accClass}`}>
+                        {acc !== null ? `${acc}%` : '—'}
+                      </span>
+                      <span className="progress-stat-label">Accuracy</span>
+                    </>
+                  );
+                })()}
+              </li>
+            </>
+          )}
         </ul>
       </div>
 

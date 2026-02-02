@@ -692,10 +692,28 @@ button {
 
 .progressive-area {
   position: relative;
+  overflow: hidden;
   border: 2px solid var(--border);
   border-radius: var(--radius);
   background: #1a1a1a;
   box-shadow: var(--shadow);
+}
+
+.progressive-stroke-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.progressive-stroke-badge-of {
+  font-weight: 500;
+  opacity: 0.7;
 }
 
 .progressive-svg {
@@ -731,6 +749,17 @@ button {
   margin: 1rem 0;
   font-size: 0.9rem;
   color: var(--muted);
+  text-align: center;
+}
+
+.progressive-warning {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  border-radius: var(--radius-sm);
   text-align: center;
 }
 
